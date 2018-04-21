@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,8 @@ namespace BFFsAngularDotNetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddAuthentication(
+                SharedOptions => SharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,8 +44,15 @@ namespace BFFsAngularDotNetCore
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    name: "Angular",
+                    template: "{*url}",
+                    defaults: new { controller = "Home", action = "Index" }
+                );
+
+
+                routes.MapRoute(
+                name: "default",
+                template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

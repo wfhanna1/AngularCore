@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BFFsAngularDotNetCore
 {
@@ -22,9 +22,23 @@ namespace BFFsAngularDotNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication:AzureAd"));
             services.AddMvc();
-            services.AddAuthentication(
-                SharedOptions => SharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddOpenIdConnect(o =>
+            {
+                o.ClientId = Configuration["Authentication:AzureAd:ClientId"];
+                o.ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
+                o.Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
+                o.CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"];
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    // map the claimsPrincipal's roles to the roles claim
+                    RoleClaimType = ClaimTypes.Role,
+                };
+                o.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +54,8 @@ namespace BFFsAngularDotNetCore
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

@@ -24,8 +24,7 @@
       ],
       "scripts": [
         "lib/jquery/dist/jquery.js",
-        "lib/bootstrap/dist/js/bootstrap.js",
-        "js/site.js"
+        "lib/bootstrap/dist/js/bootstrap.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

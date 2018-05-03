@@ -24,21 +24,21 @@ namespace BFFsAngularDotNetCore
         {
             services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication:AzureAd"));
             services.AddMvc();
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                    .AddOpenIdConnect(o =>
-            {
-                o.ClientId = Configuration["Authentication:AzureAd:ClientId"];
-                o.ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
-                o.Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
-                o.CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"];
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    // map the claimsPrincipal's roles to the roles claim
-                    RoleClaimType = ClaimTypes.Role,
-                };
-                o.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-            });
+             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                     .AddOpenIdConnect(o =>
+             {
+                 o.ClientId = Configuration["Authentication:AzureAd:ClientId"];
+                 o.ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
+                 o.Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
+                 o.CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"];
+                 o.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     // map the claimsPrincipal's roles to the roles claim
+                     RoleClaimType = ClaimTypes.Role,
+                 };
+                 o.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
